@@ -9,14 +9,18 @@ import (
 	"github.com/go-echarts/go-echarts/v2/opts"
 )
 
+const dateFormat = "2006/01/02 15:04"
+
 type ChartCandle struct {
-	Symbol    string
-	Timestamp time.Time `json:"timestamp"`
-	Open      float64   `json:"open"`
-	High      float64   `json:"high"`
-	Low       float64   `json:"low"`
-	Close     float64   `json:"close"`
-	Volume    float64   `json:"volume"`
+	Symbol         string
+	Timestamp      time.Time `json:"timestamp"`
+	Open           float64   `json:"open"`
+	High           float64   `json:"high"`
+	Low            float64   `json:"low"`
+	Close          float64   `json:"close"`
+	Volume         float64   `json:"volume"`
+	MarkPoint      string    `json:"markPoint"`
+	MarkPointPrice float64   `json:"markPointPrice"`
 }
 
 type CandleStick struct {
@@ -70,8 +74,14 @@ func (cs *CandleStick) AddCandleStickChart(name string, candles []ChartCandle) {
 	x := make([]string, 0)
 	y := make([]opts.KlineData, 0)
 	for _, c := range candles {
-		x = append(x, c.Timestamp.Format("2006/01/02 15:04"))
+		date := c.Timestamp.Format(dateFormat)
+
+		x = append(x, date)
 		y = append(y, opts.KlineData{Name: c.Symbol, Value: [4]float64{c.Open, c.Close, c.Low, c.High}})
+
+		if c.MarkPoint != "" && c.MarkPointPrice != 0 {
+			cs.AddMarkPoint(c.MarkPoint, date, c.MarkPointPrice)
+		}
 	}
 
 	styleOpts := charts.WithItemStyleOpts(opts.ItemStyle{
@@ -89,18 +99,6 @@ func (cs *CandleStick) AddCandleStickChart(name string, candles []ChartCandle) {
 
 }
 
-func (cs *CandleStick) AddPins(pins ...charts.SeriesOpts) {
-
-}
-
-func (cs *CandleStick) AddBuyPoint(date string, value float64) {
-	cs.AddMarkPoint("buy", date, value)
-}
-
-func (cs *CandleStick) AddSellPoint(date string, value float64) {
-	cs.AddMarkPoint("sell", date, value)
-}
-
 func (cs *CandleStick) AddMarkPoint(name, date string, value float64) {
 	markPoint := charts.WithMarkPointNameCoordItemOpts(opts.MarkPointNameCoordItem{
 		Name:       name,
@@ -108,7 +106,7 @@ func (cs *CandleStick) AddMarkPoint(name, date string, value float64) {
 		Label: &opts.Label{
 			Show:      true,
 			Formatter: name,
-			Color:     "white",
+			Color:     "black",
 		},
 	})
 	cs.Opts = append(cs.Opts, markPoint)

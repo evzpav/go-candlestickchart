@@ -68,8 +68,8 @@ func (h *handler) getCandleStickchart(w http.ResponseWriter, r *http.Request) {
 
 	csPage := candlestickchart.NewCandleStickPage()
 	csPage.AddCandleStickChart(symbol, chartCandles)
-	csPage.AddBuyPoint("2020/12/15 21:00", 22000.0)
-	csPage.AddSellPoint("2021/02/07 21:00", 46000.0)
+	csPage.AddMarkPoint("buy", "2020/12/15 21:00", 22000.0)
+	csPage.AddMarkPoint("sell", "2021/02/07 21:00", 46000.0)
 	csPage.Render(w)
 
 }

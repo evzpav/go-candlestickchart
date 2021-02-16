@@ -1,6 +1,6 @@
 module go-candlestickchart
 
-go 1.13
+go 1.15
 
 require (
 	github.com/evzpav/crex v1.2.15-0.20210124165757-5ba8a62480ed
